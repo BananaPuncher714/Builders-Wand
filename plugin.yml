@@ -1,0 +1,8 @@
+name: BuildersWand
+main: io.github.bananapuncher714.builderswand.BuildersWand
+version: 0.1
+description: Builders wand in Minecraft
+author: BananaPuncher714
+commands:
+  builderswand:
+    aliases: []
