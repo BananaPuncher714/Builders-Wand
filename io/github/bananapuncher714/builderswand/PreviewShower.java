@@ -18,29 +18,24 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_11_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.bananapuncher714.builderswand.util.BlockUtil;
-import net.minecraft.server.v1_11_R1.EntityArmorStand;
-import net.minecraft.server.v1_11_R1.EnumItemSlot;
+import io.github.bananapuncher714.builderswand.util.ReflectionUtil;
 import net.minecraft.server.v1_11_R1.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_11_R1.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_11_R1.PacketPlayOutSpawnEntityLiving;
-import net.minecraft.server.v1_11_R1.WorldServer;
 
-public class PreviewShower {
-	private static Map< UUID, Map< Location, EntityArmorStand > > entities = new HashMap< UUID, Map< Location, EntityArmorStand > >();
+public class PreviewShower extends BukkitRunnable{
+	private static Map< UUID, Map< Location, Object > > entities = new HashMap< UUID, Map< Location, Object > >();
 
 	public PreviewShower( Plugin plugin ) {
-		Bukkit.getScheduler().scheduleSyncRepeatingTask( plugin, this::showPreview, 0, 1 );
+		Bukkit.getScheduler().scheduleSyncRepeatingTask( plugin, this, 0, 1 );
 	}
 
-	private void showPreview() {
+	@Override
+	public void run() {
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
 			ItemStack item = player.getItemInHand();
 			if ( item == null || item.getType() == Material.AIR ) {
@@ -65,6 +60,12 @@ public class PreviewShower {
 			Material blockType = block.getType();
 
 			killAllBut( getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, blockType, block.getData(), size, 7 ), player, blockType, block.getData() );
+		}
+	}
+
+	public void disable() {
+		for ( Player player : Bukkit.getOnlinePlayers() ) {
+			killAllBut( null, player, null, ( byte ) 0 );
 		}
 	}
 
@@ -128,39 +129,45 @@ public class PreviewShower {
 	}
 
 	private static void spawn( Location loc, Player p ) {
-		Map< Location, EntityArmorStand > map = entities.get( p.getUniqueId() );
+		Map< Location, Object > map = entities.get( p.getUniqueId() );
 		if ( map == null ) {
-			map = new HashMap< Location, EntityArmorStand >();
+			map = new HashMap< Location, Object >();
 			entities.put( p.getUniqueId(), map );
 		}
 		if ( map.containsKey( loc ) ) {
 			return;
 		}
 
-		WorldServer s = ((CraftWorld)loc.getWorld()).getHandle();
-		EntityArmorStand stand = new EntityArmorStand(s);
+		try {
+			Object worldServer = ReflectionUtil.getMethod( "getWorldHandle" ).invoke( loc.getWorld() );
+			Object armorStand = ReflectionUtil.getConstructor( ReflectionUtil.getNMSClass( "EntityArmorStand" ) ).newInstance( worldServer );
 
-		stand.setLocation( loc.getX() + .5, loc.getY() - .5, loc.getZ() + .5, 0, 0 );
-		stand.setMarker( true );
-		stand.setSmall( true );
-		stand.setNoGravity( true );
-		stand.setInvisible( true );
-		stand.setInvulnerable( true );
-		
-		PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving( stand );
-		((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
+			ReflectionUtil.getMethod( "setLocation").invoke( armorStand, loc.getX() + .5, loc.getY() - .5, loc.getZ() + .5, 0f, 0f );
+			ReflectionUtil.getMethod( "setMarker").invoke( armorStand, true );
+			ReflectionUtil.getMethod( "setSmall").invoke( armorStand, true );
+			ReflectionUtil.getMethod( "setNoGravity").invoke( armorStand, true );
+			ReflectionUtil.getMethod( "setInvisible").invoke( armorStand, true );
+			ReflectionUtil.getMethod( "setInvulnerable").invoke( armorStand, true );
 
-		map.put( loc, stand );
+			Object packet = ReflectionUtil.getConstructor( ReflectionUtil.getNMSClass( "PacketPlayOutSpawnEntityLiving" ) ).newInstance( armorStand );
+
+			Object playerConnection = ReflectionUtil.getField().get( ReflectionUtil.getMethod( "getHandle" ).invoke( p ) );
+			ReflectionUtil.getMethod( "sendPacket" ).invoke( playerConnection, packet );
+
+			map.put( loc, armorStand );
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
+		}
 	}
 
 	private static void killAllBut( Collection< Location > locations, Player player, Material mat, byte data ) {
-		Map< Location, EntityArmorStand > map = entities.get( player.getUniqueId() );
+		Map< Location, Object > map = entities.get( player.getUniqueId() );
 		if ( map == null ) {
-			map = new HashMap< Location, EntityArmorStand >();
+			map = new HashMap< Location, Object >();
 			entities.put( player.getUniqueId(), map );
 			return;
 		}
-		for ( Iterator< Entry< Location, EntityArmorStand> > it = map.entrySet().iterator(); it.hasNext(); ) {
+		for ( Iterator< Entry< Location, Object> > it = map.entrySet().iterator(); it.hasNext(); ) {
 			Location location = it.next().getKey();
 			if ( locations == null || !locations.contains( location ) ) {
 				kill( location, player );
@@ -176,24 +183,30 @@ public class PreviewShower {
 	}
 
 	private static void update( Location location, Player player, Material material, byte data ) {
-		Map< Location, EntityArmorStand > map = entities.get( player.getUniqueId() );
+		Map< Location, Object > map = entities.get( player.getUniqueId() );
 		if ( map == null ) {
-			map = new HashMap< Location, EntityArmorStand >();
+			map = new HashMap< Location, Object >();
 			entities.put( player.getUniqueId(), map );
 		}
 		if ( !map.containsKey( location ) ) {
 			return;
 		}
-		EntityArmorStand stand = map.get( location );
-		ItemStack item = CraftItemStack.asBukkitCopy( stand.getEquipment( EnumItemSlot.HEAD ) );
-		if ( item.getType() != material || item.getDurability() != data ) {
-			PacketPlayOutEntityEquipment equipment = new PacketPlayOutEntityEquipment( stand.getId(), EnumItemSlot.HEAD, CraftItemStack.asNMSCopy( new ItemStack( material, 1, data ) ) );
-			((CraftPlayer)player).getHandle().playerConnection.sendPacket(equipment);
+		try {
+			Object stand = map.get( location );
+			ItemStack item = ( ItemStack ) ReflectionUtil.getMethod( "asBukkitCopy" ).invoke( null, ReflectionUtil.getMethod( "getEquipment" ).invoke( stand, ReflectionUtil.getMethod( "valueOf" ).invoke( null, "HEAD" ) ) );
+			if ( item.getType() != material || item.getDurability() != data ) {
+
+				Object packet = ReflectionUtil.getConstructor( ReflectionUtil.getNMSClass( "PacketPlayOutEntityEquipment" ) ).newInstance( ReflectionUtil.getMethod( "getId" ).invoke( stand ), ReflectionUtil.getMethod( "valueOf" ).invoke( null, "HEAD" ), ReflectionUtil.getMethod( "asNMSCopy" ).invoke( null, new ItemStack( material, 1, data ) ) );
+				Object playerConnection = ReflectionUtil.getField().get( ReflectionUtil.getMethod( "getHandle" ).invoke( player ) );
+				ReflectionUtil.getMethod( "sendPacket" ).invoke( playerConnection, packet );
+			}
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
 		}
 	}
-	
+
 	private static void kill( Location location, Player player ) {
-		Map< Location, EntityArmorStand > map = entities.get( player.getUniqueId() );
+		Map< Location, Object > map = entities.get( player.getUniqueId() );
 		if ( map == null ) {
 			return;
 		}
@@ -201,7 +214,12 @@ public class PreviewShower {
 			return;
 		}
 
-		PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy( map.get( location ).getId() );
-		((CraftPlayer)player).getHandle().playerConnection.sendPacket(packet);
+		try {
+			Object packet = ReflectionUtil.getConstructor( ReflectionUtil.getNMSClass( "PacketPlayOutEntityDestroy" ) ).newInstance( new int[] { ( int ) ReflectionUtil.getMethod( "getId" ).invoke( map.get( location ) ) } );
+			Object playerConnection = ReflectionUtil.getField().get( ReflectionUtil.getMethod( "getHandle" ).invoke( player ) );
+			ReflectionUtil.getMethod( "sendPacket" ).invoke( playerConnection, packet );
+		} catch ( Exception exception ) {
+			exception.printStackTrace();
+		}
 	}
 }

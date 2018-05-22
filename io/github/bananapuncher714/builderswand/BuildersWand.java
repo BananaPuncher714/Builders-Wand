@@ -20,6 +20,11 @@ public class BuildersWand extends JavaPlugin {
 	}
 	
 	@Override
+	public void onDisable() {
+		shower.disable();
+	}
+	
+	@Override
 	public boolean onCommand( CommandSender sender, Command command, String label, String[] args ) {
 		if ( !( sender instanceof Player ) ) {
 			sender.sendMessage( "You must be a player to receive a wand!" );

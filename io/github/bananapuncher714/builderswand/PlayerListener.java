@@ -52,6 +52,9 @@ public class PlayerListener implements Listener {
 			if ( player.getLocation().getBlock().getLocation().equals( location ) || player.getLocation().add( 0, 1, 0 ).getBlock().getLocation().equals( location ) ) {
 				continue;
 			}
+			if ( location.getBlock().getType() != Material.AIR ) {
+				continue;
+			}
 			if ( player.getGameMode() == GameMode.CREATIVE || player.getInventory().containsAtLeast( cost, 1 ) ) { 
 				if ( player.getGameMode() != GameMode.CREATIVE ) {
 					player.getInventory().removeItem( cost );
