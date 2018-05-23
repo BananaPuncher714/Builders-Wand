@@ -29,7 +29,10 @@ import io.github.bananapuncher714.builderswand.util.ReflectionUtil;
 public class PreviewShower extends BukkitRunnable{
 	private static Map< UUID, Map< Location, Object > > entities = new HashMap< UUID, Map< Location, Object > >();
 
-	public PreviewShower( Plugin plugin ) {
+	BuildersWand plugin;
+	
+	public PreviewShower( BuildersWand plugin ) {
+		this.plugin = plugin;
 		Bukkit.getScheduler().scheduleSyncRepeatingTask( plugin, this, 0, 1 );
 	}
 
@@ -41,21 +44,21 @@ public class PreviewShower extends BukkitRunnable{
 				killAllBut( null, player, null, ( byte ) 0 );
 				continue;
 			}
-			Block block = player.getTargetBlock( ( HashSet< Byte > ) null, 5 );
-			if ( block == null || block.getType() == Material.AIR ) {
+			Block block = player.getTargetBlock( plugin.getReplaceables(), 5 );
+			if ( block == null || plugin.getReplaceables().contains( block.getType() ) ) {
 				killAllBut( null, player, null, ( byte ) 0 );
 				continue;
 			}
 			int size = BuildersWand.getBuildSize( item );
 			int range = BuildersWand.getRange( item );
-			BlockFace face = BlockUtil.getBlockFace( player );
+			BlockFace face = BlockUtil.getBlockFace( player, plugin.getReplaceables() );
 			if ( size == 0 || range == 0 || face == null ) {
 				killAllBut( null, player, null, ( byte ) 0 );
 				continue;
 			}
 			Material blockType = block.getType();
 
-			killAllBut( getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, blockType, block.getData(), size, 7 ), player, blockType, block.getData() );
+			killAllBut( getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, 7 ), player, blockType, block.getData() );
 		}
 	}
 
@@ -65,7 +68,7 @@ public class PreviewShower extends BukkitRunnable{
 		}
 	}
 
-	public static List< Location > getValidLocations( Location loc, BlockFace face, Material material, byte data, int max, int radius ) {
+	public static List< Location > getValidLocations( Location loc, BlockFace face, Set< Material > replaceables, Material material, byte data, int max, int radius ) {
 		List< Location > locations = new ArrayList< Location >();
 
 		int maxDistance = radius * radius;
@@ -103,7 +106,7 @@ public class PreviewShower extends BukkitRunnable{
 
 					Block cloneBlock = clone.getBlock();
 					Block relative = cloneBlock.getRelative( face.getOppositeFace() );
-					if ( cloneBlock.getType() != Material.AIR || relative.getType() != material || relative.getData() != data ) {
+					if ( !replaceables.contains( cloneBlock.getType() ) || relative.getType() != material || relative.getData() != data ) {
 						continue;
 					}
 

@@ -1,9 +1,13 @@
 package io.github.bananapuncher714.builderswand;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -14,16 +18,32 @@ public class BuildersWand extends JavaPlugin {
 	public static final int DEFAULT_RANGE = 7;
 	
 	private PreviewShower shower;
+	private Set< Material > replaceables = new HashSet< Material >();
 	
 	@Override
 	public void onEnable() {
-		Bukkit.getPluginManager().registerEvents( new PlayerListener(), this );
+		saveDefaultConfig();
+		loadConfig();
+		
+		Bukkit.getPluginManager().registerEvents( new PlayerListener( this ), this );
 		shower = new PreviewShower( this );
 	}
 	
 	@Override
 	public void onDisable() {
 		shower.disable();
+	}
+	
+	private void loadConfig() {
+		FileConfiguration config = getConfig();
+		for ( String string : config.getStringList( "can-replace" ) ) {
+			Material mat = Material.getMaterial( string.toUpperCase() );
+			if ( mat == null ) {
+				getLogger().info( "Invalid MATERIAL found in config! (" + string + ")" );
+				continue;
+			}
+			replaceables.add( mat );
+		}
 	}
 	
 	@Override
@@ -55,6 +75,10 @@ public class BuildersWand extends JavaPlugin {
 		player.sendMessage( "Recieved builders wand of (" + size + ") size and (" + range + ") range!" );
 		
 		return true;
+	}
+	
+	public Set< Material > getReplaceables() {
+		return replaceables;
 	}
 
 	public static ItemStack getBuildersWand( ItemStack item, int buildSize ) {

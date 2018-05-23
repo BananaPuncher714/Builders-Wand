@@ -2,7 +2,9 @@ package io.github.bananapuncher714.builderswand.util;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -14,8 +16,8 @@ public class BlockUtil {
 	* @param the player who's targeted blocks BlockFace is to be checked.
 	* @return the BlockFace of the targeted block, or null if the targeted block is non-occluding.
 	*/
-	public static BlockFace getBlockFace(Player player) {
-	    List< Block > lastTwoTargetBlocks = player.getLastTwoTargetBlocks( ( HashSet< Byte > ) null, 100);
+	public static BlockFace getBlockFace( Player player, Set< Material > blocks ) {
+	    List< Block > lastTwoTargetBlocks = player.getLastTwoTargetBlocks( blocks, 100);
 	    if ( lastTwoTargetBlocks.size() != 2 ) { //|| !lastTwoTargetBlocks.get( 1 ).getType().isOccluding() ) {
 	    	return null;
 	    }

@@ -17,6 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import io.github.bananapuncher714.builderswand.util.BlockUtil;
 
 public class PlayerListener implements Listener {
+	BuildersWand plugin;
+	
+	public PlayerListener( BuildersWand plugin ) {
+		this.plugin = plugin;
+	}
 	
 	@EventHandler( ignoreCancelled = true, priority = EventPriority.HIGHEST )
 	public void onPlayerInteractEvent( PlayerInteractEvent event ) {
@@ -42,18 +47,18 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		BlockFace face = BlockUtil.getBlockFace( player );
+		BlockFace face = BlockUtil.getBlockFace( player, plugin.getReplaceables() );
 		if ( face == null ) {
 			face = event.getBlockFace();
 		}
 		Material blockType = block.getType();
 		
 		ItemStack cost = new ItemStack( blockType, 1, block.getData() );
-		for ( Location location : PreviewShower.getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, blockType, block.getData(), size, 7 ) ) {
+		for ( Location location : PreviewShower.getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, 7 ) ) {
 			if ( player.getLocation().getBlock().getLocation().equals( location ) || player.getLocation().add( 0, 1, 0 ).getBlock().getLocation().equals( location ) ) {
 				continue;
 			}
-			if ( location.getBlock().getType() != Material.AIR ) {
+			if ( !plugin.getReplaceables().contains( location.getBlock().getType() ) ) {
 				continue;
 			}
 			if ( player.getGameMode() == GameMode.CREATIVE || player.getInventory().containsAtLeast( cost, 1 ) ) { 
