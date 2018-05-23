@@ -25,7 +25,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import io.github.bananapuncher714.builderswand.util.BlockUtil;
 import io.github.bananapuncher714.builderswand.util.ReflectionUtil;
-import net.minecraft.server.v1_11_R1.PacketPlayOutEntityDestroy;
 
 public class PreviewShower extends BukkitRunnable{
 	private static Map< UUID, Map< Location, Object > > entities = new HashMap< UUID, Map< Location, Object > >();
@@ -48,12 +47,9 @@ public class PreviewShower extends BukkitRunnable{
 				continue;
 			}
 			int size = BuildersWand.getBuildSize( item );
-			if ( size == 0 ) {
-				killAllBut( null, player, null, ( byte ) 0 );
-				continue;
-			}
+			int range = BuildersWand.getRange( item );
 			BlockFace face = BlockUtil.getBlockFace( player );
-			if ( face == null ) {
+			if ( size == 0 || range == 0 || face == null ) {
 				killAllBut( null, player, null, ( byte ) 0 );
 				continue;
 			}

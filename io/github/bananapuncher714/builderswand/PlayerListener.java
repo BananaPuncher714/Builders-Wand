@@ -7,6 +7,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -17,7 +18,7 @@ import io.github.bananapuncher714.builderswand.util.BlockUtil;
 
 public class PlayerListener implements Listener {
 	
-	@EventHandler
+	@EventHandler( ignoreCancelled = true, priority = EventPriority.HIGHEST )
 	public void onPlayerInteractEvent( PlayerInteractEvent event ) {
 		if ( event.getAction() != Action.RIGHT_CLICK_BLOCK ) {
 			return;
@@ -32,10 +33,10 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		int size = BuildersWand.getBuildSize( item );
-		if ( size == 0 ) {
+		int range = BuildersWand.getRange( item );
+		if ( size == 0 || range == 0 ) {
 			return;
 		}
-		
 		Block block = event.getClickedBlock();
 		if ( block == null || block.getType() == Material.AIR ) {
 			return;

@@ -11,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.bananapuncher714.builderswand.util.NBTEditor;
 
 public class BuildersWand extends JavaPlugin {
+	public static final int DEFAULT_RANGE = 7;
+	
 	private PreviewShower shower;
 	
 	@Override
@@ -32,6 +34,7 @@ public class BuildersWand extends JavaPlugin {
 		}
 		Player player = ( Player ) sender;
 		int size = 9;
+		int range = DEFAULT_RANGE;
 		if ( args.length > 0 ) {
 			try {
 				size = Math.max( 1, Integer.parseInt( args[ 0 ] ) );
@@ -39,17 +42,28 @@ public class BuildersWand extends JavaPlugin {
 				size = 9;
 			}
 		}
+		if ( args.length > 1 ) {
+			try {
+				range = Math.max( 1, Integer.parseInt( args[ 1 ] ) );
+			} catch ( Exception exception ) {
+			}
+		}
 		
 		ItemStack item = new ItemStack( Material.STICK );
 		
-		player.getInventory().addItem( getBuildersWand( item, size ) );
-		player.sendMessage( "Recieved builders wand of (" + size + ") size!" );
+		player.getInventory().addItem( getBuildersWand( item, size, range ) );
+		player.sendMessage( "Recieved builders wand of (" + size + ") size and (" + range + ") range!" );
 		
 		return true;
 	}
 
 	public static ItemStack getBuildersWand( ItemStack item, int buildSize ) {
-		return NBTEditor.setItemTag( item, buildSize, "builderswand", "wand-size" );
+		return getBuildersWand( item, buildSize, DEFAULT_RANGE );
+	}
+	
+	public static ItemStack getBuildersWand( ItemStack item, int buildSize, int range ) {
+		item = NBTEditor.setItemTag( item, buildSize, "builderswand", "wand-size" );
+		return NBTEditor.setItemTag( item, range, "builderswand", "wand-range" );
 	}
 	
 	public static int getBuildSize( ItemStack item ) {
@@ -57,5 +71,12 @@ public class BuildersWand extends JavaPlugin {
 			return 0;
 		}
 		return ( int ) NBTEditor.getItemTag( item, "builderswand", "wand-size" );
+	}
+	
+	public static int getRange( ItemStack item ) {
+		if ( item == null || NBTEditor.getItemTag( item, "builderswand", "wand-range" ) == null ) {
+			return 0;
+		}
+		return ( int ) NBTEditor.getItemTag( item, "builderswand", "wand-range" );
 	}
 }
