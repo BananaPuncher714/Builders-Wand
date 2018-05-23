@@ -1,18 +1,22 @@
 package io.github.bananapuncher714.builderswand;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
 import io.github.bananapuncher714.builderswand.util.BlockUtil;
 
@@ -61,15 +65,24 @@ public class PlayerListener implements Listener {
 			if ( !plugin.getReplaceables().contains( location.getBlock().getType() ) ) {
 				continue;
 			}
+			boolean hasItem = true;
 			if ( player.getGameMode() == GameMode.CREATIVE || player.getInventory().containsAtLeast( cost, 1 ) ) { 
-				if ( player.getGameMode() != GameMode.CREATIVE ) {
-					player.getInventory().removeItem( cost );
-				}
+				hasItem = player.getGameMode() != GameMode.CREATIVE;
 			} else {
 				continue;
 			}
-			location.getBlock().setType( blockType );
-			location.getBlock().setData( block.getData() );
+			BlockState state = location.getBlock().getState();
+			state.setType( blockType );
+			state.setRawData( block.getData() );
+			BlockPlaceEvent buildEvent = new BlockPlaceEvent( location.getBlock(), state, location.getBlock().getRelative( face.getOppositeFace() ), cost, player, true, EquipmentSlot.HAND );
+			Bukkit.getPluginManager().callEvent( buildEvent );
+			if ( buildEvent.isCancelled() ) {
+				continue;
+			}
+			if ( hasItem ) {
+				player.getInventory().removeItem( cost );
+			}
+			state.update( true );
 		}
 	}
 
