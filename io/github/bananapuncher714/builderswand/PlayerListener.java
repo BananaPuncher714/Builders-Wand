@@ -61,7 +61,7 @@ public class PlayerListener implements Listener {
 		Material blockType = block.getType();
 		
 		ItemStack cost = new ItemStack( blockType, 1, block.getData() );
-		for ( Location location : PreviewShower.getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, 7 ) ) {
+		for ( Location location : PreviewShower.getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, range ) ) {
 			if ( player.getLocation().getBlock().getLocation().equals( location ) || player.getLocation().add( 0, 1, 0 ).getBlock().getLocation().equals( location ) ) {
 				continue;
 			}

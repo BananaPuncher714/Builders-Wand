@@ -63,7 +63,7 @@ public class PreviewShower extends BukkitRunnable{
 			}
 			Material blockType = block.getType();
 
-			killAllBut( getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, 7 ), player, blockType, block.getData() );
+			killAllBut( getValidLocations( block.getLocation().add( face.getModX(), face.getModY(), face.getModZ() ), face, plugin.getReplaceables(), blockType, block.getData(), size, range ), player, blockType, block.getData() );
 		}
 	}
 
