@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,6 +52,9 @@ public class BuildersWand extends JavaPlugin {
 		if ( !( sender instanceof Player ) ) {
 			sender.sendMessage( "You must be a player to receive a wand!" );
 			return false;
+		}
+		if ( !sender.hasPermission( "builderswand.admin" ) ) {
+			sender.sendMessage( ChatColor.RED + "You do not have permission to run this command!" );
 		}
 		Player player = ( Player ) sender;
 		int size = 9;

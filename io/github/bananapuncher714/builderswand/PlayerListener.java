@@ -1,6 +1,7 @@
 package io.github.bananapuncher714.builderswand;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,8 +17,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
-
 import io.github.bananapuncher714.builderswand.util.BlockUtil;
 
 public class PlayerListener implements Listener {
@@ -37,6 +36,10 @@ public class PlayerListener implements Listener {
 		}
 		
 		Player player = event.getPlayer();
+		
+		if ( !player.hasPermission( "builderswand.admin" ) && !player.hasPermission( "builderswand.use" ) ) {
+			return;
+		}
 		ItemStack item = player.getItemInHand();
 		if ( item == null || item.getType() == Material.AIR ) {
 			return;

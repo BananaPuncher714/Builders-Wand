@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,6 +40,10 @@ public class PreviewShower extends BukkitRunnable{
 	@Override
 	public void run() {
 		for ( Player player : Bukkit.getOnlinePlayers() ) {
+			if ( !player.hasPermission( "builderswand.admin" ) && !player.hasPermission( "builderswand.use" ) ) {
+				killAllBut( null, player, null, ( byte ) 0 );
+				continue;
+			}
 			ItemStack item = player.getItemInHand();
 			if ( item == null || item.getType() == Material.AIR ) {
 				killAllBut( null, player, null, ( byte ) 0 );
