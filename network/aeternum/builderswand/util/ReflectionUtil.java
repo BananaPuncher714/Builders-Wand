@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.builderswand.util;
+package network.aeternum.builderswand.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

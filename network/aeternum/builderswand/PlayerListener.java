@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.builderswand;
+package network.aeternum.builderswand;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,7 +17,8 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import io.github.bananapuncher714.builderswand.util.BlockUtil;
+
+import network.aeternum.builderswand.util.BlockUtil;
 
 public class PlayerListener implements Listener {
 	BuildersWand plugin;

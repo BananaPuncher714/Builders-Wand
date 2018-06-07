@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.builderswand;
+package network.aeternum.builderswand;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import io.github.bananapuncher714.builderswand.util.NBTEditor;
+import network.aeternum.builderswand.util.NBTEditor;
 
 public class BuildersWand extends JavaPlugin {
 	public static final int DEFAULT_RANGE = 7;

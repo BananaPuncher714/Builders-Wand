@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.builderswand.util;
+package network.aeternum.builderswand.util;
 
 import java.util.HashSet;
 import java.util.List;

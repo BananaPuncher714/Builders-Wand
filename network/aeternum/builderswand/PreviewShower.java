@@ -1,4 +1,4 @@
-package io.github.bananapuncher714.builderswand;
+package network.aeternum.builderswand;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import io.github.bananapuncher714.builderswand.util.BlockUtil;
-import io.github.bananapuncher714.builderswand.util.ReflectionUtil;
+import network.aeternum.builderswand.util.BlockUtil;
+import network.aeternum.builderswand.util.ReflectionUtil;
 
 public class PreviewShower extends BukkitRunnable{
 	private static Map< UUID, Map< Location, Object > > entities = new HashMap< UUID, Map< Location, Object > >();

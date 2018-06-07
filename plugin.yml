@@ -1,5 +1,5 @@
 name: BuildersWand
-main: io.github.bananapuncher714.builderswand.BuildersWand
+main: network.aeternum.builderswand.BuildersWand
 version: 1.1
 description: Builders wand in Minecraft
 author: BananaPuncher714
