@@ -4,20 +4,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
-import com.mojang.authlib.GameProfile;
-
-import net.minecraft.server.v1_11_R1.PacketPlayOutSpawnEntityLiving;
-
 public class ReflectionUtil {
-	private static HashMap< String, Class<?> > classCache;
-	private static HashMap< String, Method > methodCache;
-	private static HashMap< Class< ? >, Constructor< ? > > constructorCache;
+	private static Map< String, Class<?> > classCache;
+	private static Map< String, Method > methodCache;
+	private static Map< Class< ? >, Constructor< ? > > constructorCache;
 	private static Field connection;
 	private static String version;
 	

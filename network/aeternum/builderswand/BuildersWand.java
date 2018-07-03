@@ -55,6 +55,7 @@ public class BuildersWand extends JavaPlugin {
 		}
 		if ( !sender.hasPermission( "builderswand.admin" ) ) {
 			sender.sendMessage( ChatColor.RED + "You do not have permission to run this command!" );
+			return false;
 		}
 		Player player = ( Player ) sender;
 		int size = 9;
